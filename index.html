@@ -1,0 +1,591 @@
+<link rel="stylesheet" href="/pt/kite-pharma/style.css">
+<div class="kite-loader js-loader"></div>
+<div class="kite-main">
+    <div class="kite-header">
+        <div class="kite-container">
+            <div class="kite-header__wrapper">
+                <div class="kite-header__logo">
+                    <img src="/pt/kite-pharma/img/logo.svg" alt="Kite Pharma logo" />
+                </div>
+
+                <div class="kite-header__content">
+                    <div class="kite-header__content-title">SQDEP Metrics for tier 5</div>
+                </div>
+
+                <div class="kite-header__filter">
+                    <span class="kite-header__filter-label">Week Ending</span>
+                    <select id="kite-week-filter-select" class="kite-header__filter-input"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="kite-container">
+        <ul class="kite-row">
+            <li class="kite-column">
+                <div class="kite-column__header">
+                    <img class="kite-column__header-icon" src="/pt/kite-pharma/img/icon-safety.svg" alt="Safety icon">
+                    <div class="kite-column__header-title">Safety</div>
+                </div>
+                <div class="kite-column__card-wrapper" data-column="safety">
+                </div>
+            </li>
+            <li class="kite-column">
+                <div class="kite-column__header">
+                    <img class="kite-column__header-icon" src="/pt/kite-pharma/img/icon-quality.svg" alt="Quality icon">
+                    <div class="kite-column__header-title">Quality</div>
+                </div>
+                <div class="kite-column__card-wrapper" data-column="quality">
+                </div>
+            </li>
+            <li class="kite-column">
+                <div class="kite-column__header">
+                    <img class="kite-column__header-icon" src="/pt/kite-pharma/img/icon-delivery.svg" alt="Safety icon">
+                    <div class="kite-column__header-title">Delivery</div>
+                </div>
+                <div class="kite-column__card-wrapper" data-list="delivery" data-column="delivery">
+                    <div class="kite-column__card kite-column__card--text-left" data-tables="delivery">
+                </div>
+                </div>
+            </li>
+            <li class="kite-column">
+                <div class="kite-column__header">
+                    <img class="kite-column__header-icon" src="/pt/kite-pharma/img/icon-economics.svg" alt="Safety icon">
+                    <div class="kite-column__header-title">Economics</div>
+                </div>
+                <div class="kite-column__card-wrapper" data-list="economics" data-column="economics">
+                    <div class="kite-column__card kite-column__card kite-column__card--text-left" data-tables="economics">
+                    </div>
+                </div>
+            </li>
+            <li class="kite-column">
+                <div class="kite-column__header">
+                    <img class="kite-column__header-icon" src="/pt/kite-pharma/img/icon-people.svg" alt="Safety icon">
+                    <div class="kite-column__header-title">People</div>
+                </div>
+                <div class="kite-column__card-wrapper" data-list="people" data-column="people">
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+
+<script>
+    $(document).ready(() => {
+        let loadedData;
+        let deliveryDatasetData;
+        let loaderEl = $('.js-loader');
+        let safetyColumnWrapper = $('[data-column="safety"]');
+        let qualityColumnWrapper = $('[data-column="quality"]');
+        let deliveryColumnWrapper = $('[data-column="delivery"]');
+        let economicsColumnWrapper = $('[data-column="economics"]');
+        let weekFilterSelect = $('#kite-week-filter-select');
+        let deliveryEventList = $('[data-list="delivery"]');
+        let deliveryTablesWrapper = $('[data-tables="delivery"]');
+        let economicsTablesWrapper = $('[data-tables="economics"]');
+        let economicsEventList = $('[data-list="economics"]');
+        let peopleColumnWrapper = $('[data-column="people"]');
+        let peopleEventList = $('[data-list="people"]');
+
+        let safetyCardsData = [Safety Column];
+        let qualityCardsData = [Quality Column];
+        let deliveryEventCalendar = [Delivery Calendar];
+        let deliveryTables = [Delivery Tables];
+        let economicsTables = [Economics Tables];
+        let economicsEventCalendars = [Economics Calendars];
+        let peopleCardsData = [People Column];
+        let peopleEventCalendars = [People Calendars];
+
+        let todayDate = new Date().toISOString().split('T')[0];
+
+        const hideColumns = () => {
+            safetyColumnWrapper.hide();
+            qualityColumnWrapper.hide();
+            deliveryColumnWrapper.hide();
+            economicsColumnWrapper.hide();
+            peopleColumnWrapper.hide();
+        };
+
+        const showColumns = () => {
+            safetyColumnWrapper.show();
+            qualityColumnWrapper.show();
+            deliveryColumnWrapper.show();
+            economicsColumnWrapper.show();
+            peopleColumnWrapper.show();
+        }
+
+        const showLoader = () => {
+            loaderEl.show();
+        }
+
+        const hideLoader = () => {
+            loaderEl.hide();
+        }
+
+        const getClosestDateToDate = (arr, date) => {
+            let matchToDate = new Date(date);
+            matchToDate.setHours(23, 59, 59);
+
+            return arr.reduce((a, b) => {
+                let d = b;
+                return d < matchToDate ? a : (a && d < a ? a : b);
+            }, null);
+        };
+
+        const ajax1 = () => {
+            return $.ajax({
+                url: '/home/index/refresh/ajax/Y',
+                type: 'POST',
+                data: {},
+                success: function (response) {
+                    const db = new DashboardStorage(response.data),
+                        rows = db.rows;
+                    loadedData = rows;
+                }
+            });
+        };
+
+        const ajax2 = () => {
+            return $.ajax({
+                type: 'GET',
+                url: '/api/dataset_data?dataset=9178&&all_dimension_value=Y',
+                dataType: 'JSON',
+                success: function (data) {
+                    deliveryDatasetData = data;
+                }
+            });
+        };
+
+        const fillCard = (id, wrapper) => {
+            let singleMetricData = [];
+
+            for (let item in loadedData) {
+                loadedData[item]['element_id'] == id ? singleMetricData.push(loadedData[item]) : ''
+            }
+
+
+            for (let metric of singleMetricData) {
+                let valueEl;
+
+                if (metric.last_measurement_value_formatted || metric.last_measurement_value_formatted !==
+                    '') {
+                    valueEl =
+                        `<div class="kite-column__card-value js-single-card-value">${metric.last_measurement_value_formatted}</div>`
+                } else {
+                    valueEl =
+                        `<div class="kite-column__card-value --is-unavailable js-single-card-value">Unavailable</div>`
+                }
+
+                let card = `<div class="kite-column__card js-single-card" data-id="${id}">
+                       ${valueEl}
+                        <div class="kite-column__card-text">${metric.element_dashboard_name} *</div>
+                    </div>`;
+
+                wrapper.append(card);
+            }
+        };
+
+        const buildWeekFilter = (select) => {
+            const getLastSixMonthsFridays = () => {
+                const getSixMonthsBeforeDate = date => {
+                    let d = date;
+                    let m = d.getMonth();
+                    d.setMonth(d.getMonth() - 6);
+                    let diff = (m + 12 - d.getMonth()) % 12;
+                    if (diff < 6) d.setDate(0)
+                    return d;
+                };
+
+                let result = [];
+                let today = new Date();
+                let sixMonthsBeforeDate = getSixMonthsBeforeDate(new Date());
+                let day = 5;
+                let previousDate = new Date(sixMonthsBeforeDate);
+                previousDate.setDate(previousDate.getDate() + (day - previousDate.getDay() + 7) % 7);
+
+                while (today > previousDate) {
+                    result.push(new Date(+previousDate));
+                    previousDate.setDate(previousDate.getDate() + 7);
+                }
+                return result;
+            }
+
+
+            let fridays = getLastSixMonthsFridays();
+            fridays = fridays.reverse();
+            let dateOptions = {
+                month: 'long',
+                day: 'numeric'
+            };
+            let namedDatesFormat = [];
+            let mySqlDatesFormat = []
+
+            const pasteFilterValues = () => {
+                for (let [index, day] of fridays.entries()) {
+                    let namedDate = new Date(day).toLocaleDateString('en-US', dateOptions);
+                    let mySqlDate = new Date(day).toISOString().split('T')[0];
+                    let el;
+                    if (index == 0) {
+                        el = `<option value="${mySqlDate}" selected>${namedDate}</option>`;
+                    } else {
+                        el = `<option value="${mySqlDate}">${namedDate}</option>`;
+                    }
+                    select.append(el);
+                }
+            };
+
+            pasteFilterValues();
+        };
+
+
+        const buildEventCalendarList = (id, calendar, color, date, wrapper) => {
+            showLoader();
+
+            const buildFunc = data => {
+                let actualEventsArray = [];
+                let listItemColor;
+                let listCardWrapper = $(`<div class="kite-column__card kite-column__card kite-column__card--text-left" data-list="${calendar}"></div>`)
+                let listWrapper = $(`<ul class="kite-column__card-list"></ul></div>`);
+                let listTitle = $(
+                    `<div class="kite-column__card-text" data-title-name="${calendar}">${calendar}</div>`);
+
+                listTitle.remove();
+                listWrapper.remove();
+                listCardWrapper.remove();
+
+                if (color == 'green') {
+                    listItemColor = 'kite-column__card-list-item--green';
+                } else if (color == 'red') {
+                    listItemColor = 'kite-column__card-list-item--red';
+                }
+
+                for (let item of data) {
+                    let eventStartTime = item.event_start_time.split(' ')[0];
+
+                    if (eventStartTime < date && item.event_calendar == calendar) {
+                        actualEventsArray.push(item);
+                    }
+                }
+
+                $(`[data-list="${calendar}"]`).remove();
+                $(`[data-title-name="${calendar}"]`).remove();
+
+                if (actualEventsArray.length == 0) {
+                    $(`[data-list="${calendar}"]`).remove();
+                    $(`[data-title-name="${calendar}"]`).remove();
+                } else {
+                    for (let event of actualEventsArray) {
+                        let listItem = `<li
+                                class="kite-column__card-list-item ${listItemColor}">
+                               ${event.description}</li>`;
+
+                        listWrapper.prepend(listItem);
+                    }
+            
+                    listCardWrapper.append(listTitle);
+                    listCardWrapper.append(listWrapper);
+                    wrapper.prepend(listCardWrapper);
+                }
+
+            };
+
+            $.ajax({
+                type: 'GET',
+                url: `/api/dataset_data?dataset=${id}&&all_dimension_value=Y`,
+                dataType: 'JSON',
+                success: function (data) {
+                    buildFunc(data.data);
+                }
+            });
+        };
+
+        const buildTable = (name, columns, id, type, wrapper, date) => {
+            // Elements       
+            let tableElWrapper;
+            let tableHeadingRow;
+            let tableHeader = `<tr class="kite-column__card-table-header">
+                <th class="kite-column__card-table-column kite-column__card-table-column--heading" colspan="3">${name}</th>
+                </tr>`;
+
+            // JS
+            let tableObj = {};
+            let metricData;
+            let regionObj;
+            let columnsNames = columns.split(',');
+            tableObj[id] = {};
+
+            // Remove table & hide wrapper
+            $(`[data-table-id="${id}"]`).remove();
+            wrapper.hide();
+
+            const buildTableEl = () => {
+                for (let item of deliveryDatasetData.data) {
+                    if (item.element_id == id) {
+                        let dimensionFirstValue = item.dimension_value.split(' - ')[0];
+                        let dimensionSecondValue = item.dimension_value.split(' - ')[1];
+
+                        if (!tableObj[id].hasOwnProperty('region')) {
+                            tableObj[id]['region'] = {};
+                        }
+
+                        if (!tableObj[id]['region'][dimensionFirstValue]) {
+                            tableObj[id]['region'][dimensionFirstValue] = {};
+                        }
+
+                        if (!tableObj[id]['region'][dimensionFirstValue].hasOwnProperty(
+                                dimensionSecondValue)) {
+                            if (columns == '') {
+                                tableObj[id]['region'][dimensionFirstValue][
+                                    'column'
+                                ] = item.segment_value_id;
+                            } else {
+                                if (columnsNames.includes(dimensionSecondValue)) {
+                                    tableObj[id]['region'][dimensionFirstValue][
+                                        dimensionSecondValue
+                                    ] = item.segment_value_id;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                let tableObjRegions = tableObj[id]['region'];
+
+                if (type == '3 columns') {
+                    tableElWrapper = $(
+                        `<table class="kite-column__card-table kite-column__card-table--striped" data-table-id="${id}"></table>`
+                    );
+                    tableHeadingRow = $(
+                        '<tr><td class="kite-column__card-table-column kite-column__card-table-column--heading">Region</td></tr>'
+                    );
+
+                    tableElWrapper.append(tableHeader);
+
+                    for (let [i, title] of columnsNames.entries()) {
+                        let columnEl = $(
+                            `<td class="kite-column__card-table-column kite-column__card-table-column--heading">Product ${i + 1}</td>`
+                        )
+                        tableHeadingRow.append(columnEl);
+                    }
+
+                    tableElWrapper.append(tableHeadingRow);
+
+                    for (let item in tableObjRegions) {
+                        let tableRow = $(
+                            `<tr><td class="kite-column__card-table-column">${item}</td></tr>`
+                        );
+
+                        for (let title of columnsNames) {
+                            let segmentId = tableObjRegions[item][title];
+
+                            for (let metric in metricData) {
+                                let segments = metricData[metric][0].data;
+                                let dates = metricData[metric][1].data;
+                                let values = metricData[metric][2].data;
+                                let closestDate = getClosestDateToDate(dates, date);
+
+                                if (dates.length !== 0) {
+                                    for (let [i, value] of dates.entries()) {
+                                        if (value == closestDate && segments[i] ==
+                                            segmentId) {
+                                            tableRow.append(
+                                                `<td class="kite-column__card-table-column kite-column__card-table-column--value">${values[i]}</td>`
+                                            );
+                                        }
+                                    }
+                                } else {
+                                    tableRow.append(
+                                        `<td class="kite-column__card-table-column kite-column__card-table-column--value">-</td>`
+                                    );
+                                }
+                            }
+                        }
+                        tableElWrapper.append(tableRow);
+                    }
+
+                } else if (type == '2 columns') {
+                    tableElWrapper = $(
+                        `<table class="kite-column__card-table kite-column__card-table--small" data-table-id="${id}"></table>`
+                    );
+
+                    tableElWrapper.append(tableHeader);
+
+                    for (let item in tableObjRegions) {
+                        let tableRow = $(
+                            `<tr><td class="kite-column__card-table-column">${item}</td></tr>`
+                        );
+
+                        let segmentId = tableObjRegions[item]['column'];
+
+                        for (let metric in metricData) {
+                            let segments = metricData[metric][0].data;
+                            let dates = metricData[metric][1].data;
+                            let values = metricData[metric][2].data;
+                            let closestDate = getClosestDateToDate(dates, date);
+
+                            if (dates.length !== 0) {
+                                for (let [i, value] of dates.entries()) {
+                                    if (value == closestDate && segments[i] ==
+                                        segmentId) {
+                                        tableRow.append(
+                                            `<td class="kite-column__card-table-column kite-column__card-table-column--value">$${values[i]}</td>`
+                                        );
+                                    }
+                                }
+                            } else {
+                                tableRow.append(
+                                    `<td class="kite-column__card-table-column kite-column__card-table-column--value">-</td>`
+                                );
+                            }
+                        }
+                        tableElWrapper.append(tableRow);
+                    }
+                } else if (type == 'Single column') {
+                    tableElWrapper = $(
+                        `<table class="kite-column__card-table kite-column__card-table--single" data-table-id="${id}"></table>`
+                    );
+
+                    tableElWrapper.append(tableHeader);
+
+                    for (let item in tableObjRegions) {
+                        let tableRow = $(
+                            `<tr></tr>`
+                        );
+
+                        let segmentId = tableObjRegions[item]['column'];
+
+                        for (let metric in metricData) {
+                            let segments = metricData[metric][0].data;
+                            let dates = metricData[metric][1].data;
+                            let values = metricData[metric][2].data;
+                            let closestDate = getClosestDateToDate(dates, date);
+
+                            if (dates.length !== 0) {
+                                for (let [i, value] of dates.entries()) {
+                                    if (value == closestDate && segments[i] ==
+                                        segmentId) {
+                                        tableRow.append(
+                                            `<td class="kite-column__card-table-column">${item}: ${values[i]}</td>`
+                                        );
+                                    }
+                                }
+                            } else {
+                                tableRow.append(
+                                    `<td class="kite-column__card-table-column">${item}: 0</td>`
+                                );
+                            }
+                        }
+                        tableElWrapper.append(tableRow);
+                    }
+                }
+                wrapper.append(tableElWrapper);
+                wrapper.show();
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: `/api/metric_data?element=${id}&all_dimension_value=Y&end_time=${date}`,
+                dataType: 'JSON',
+                success: function (data) {
+                    metricData = data;
+                    buildTableEl();
+                }
+            });
+        };
+
+        const updateCards = date => {
+            let cards = $('.js-single-card');
+
+            cards.each(function () {
+                let cardId = $(this).attr('data-id');
+                let cardValueEl = $(this).find('.js-single-card-value');
+
+                $.ajax({
+                    type: 'GET',
+                    url: `/api/metric_data?element=${cardId}&all_dimension_value=Y&end_time=${date}`,
+                    dataType: 'JSON',
+                    success: function (data) {
+                        let valueRow = data.data[2].data;
+                        let lastValue = valueRow[valueRow.length - 1];
+
+                        if (lastValue == undefined) {
+                            cardValueEl.addClass('--is-unavailable').text(
+                                'Unavailable');
+                        } else {
+                            cardValueEl.removeClass('--is-unavailable').text(valueRow[
+                                valueRow.length - 1])
+                        }
+
+                        hideLoader();
+                    }
+                });
+            });
+        };
+
+        const applyFilter = () => {
+            let filterDate = weekFilterSelect.find('option:selected').val();
+
+            updateCards(filterDate);
+
+            deliveryEventCalendar.forEach((item) => {
+                buildEventCalendarList(item['id'], item['event_calendar'], item['color'], filterDate,
+                    deliveryEventList);
+            });
+
+            deliveryTables.forEach((item) => {
+                buildTable(item['table_name'], item['column_names'], item['metric_id'], item[
+                    'type'], deliveryTablesWrapper, filterDate);
+            });
+
+            economicsTables.forEach((item) => {
+                buildTable(item['table_name'], item['column_names'], item['metric_id'], item[
+                    'type'], economicsTablesWrapper, filterDate);
+            });
+
+            economicsEventCalendars.forEach((item) => {
+                buildEventCalendarList(item['id'], item['event_calendar'], item['color'], filterDate,
+                    economicsEventList);
+            });
+
+            peopleEventCalendars.forEach((item) => {
+                buildEventCalendarList(item['id'], item['event_calendar'], item['color'], filterDate,
+                    peopleEventList);
+            });
+
+            showLoader();
+            showColumns();
+        }
+
+        const init = () => {
+            hideLoader();
+
+            safetyCardsData.forEach((item) => {
+                fillCard(item['metric_id'], safetyColumnWrapper);
+            });
+
+            qualityCardsData.forEach((item) => {
+                fillCard(item['metric_id'], qualityColumnWrapper);
+            });
+
+            peopleCardsData.forEach((item) => {
+                fillCard(item['metric_id'], peopleColumnWrapper);
+            });
+
+            applyFilter();
+        };
+
+        showLoader();
+        hideColumns();
+
+        $.when(ajax1(), ajax2()).done(() => {
+            init();
+        });
+
+
+        buildWeekFilter(weekFilterSelect);
+
+        weekFilterSelect.on('change', () => {
+            applyFilter();
+        })
+    });
+</script>

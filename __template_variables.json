@@ -1,0 +1,198 @@
+[
+    {
+        "portal_page_template_tag_id": "364",
+        "portal_page_template_id": "52",
+        "name": "Safety Column",
+        "uid": "8a8a6d5e06207642a25f",
+        "default_value": "",
+        "additional_options": [
+            "metric_id"
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "0",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": "The ID of the Metric"
+    },
+    {
+        "portal_page_template_tag_id": "365",
+        "portal_page_template_id": "52",
+        "name": "Quality Column",
+        "uid": "806cfa23ec51d4ce0721",
+        "default_value": "",
+        "additional_options": [
+            "metric_id"
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "1",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": "The ID of the Metric"
+    },
+    {
+        "portal_page_template_tag_id": "367",
+        "portal_page_template_id": "52",
+        "name": "Delivery Calendar",
+        "uid": "3cc303085fe03284d72b",
+        "default_value": "",
+        "additional_options": [
+            "id",
+            "event_calendar",
+            {
+                "name": "color",
+                "type": "select",
+                "options": [
+                    "default",
+                    "green",
+                    "red"
+                ]
+            }
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "2",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": ""
+    },
+    {
+        "portal_page_template_tag_id": "369",
+        "portal_page_template_id": "52",
+        "name": "Delivery Tables",
+        "uid": "290cf9ebfc1c60eab4f4",
+        "default_value": "",
+        "additional_options": [
+            "table_name",
+            "column_names",
+            "metric_id",
+            {
+                "name": "type",
+                "type": "select",
+                "options": [
+                    "3 columns",
+                    "2 columns",
+                    "Single column"
+                ]
+            }
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "3",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": ""
+    },
+    {
+        "portal_page_template_tag_id": "372",
+        "portal_page_template_id": "52",
+        "name": "Economics Tables",
+        "uid": "fa2ab5c9efc00c9a8e3d",
+        "default_value": "",
+        "additional_options": [
+            "table_name",
+            "column_names",
+            "metric_id",
+            {
+                "name": "type",
+                "type": "select",
+                "options": [
+                    "3 columns",
+                    "2 columns",
+                    "Single column"
+                ]
+            }
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "4",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": ""
+    },
+    {
+        "portal_page_template_tag_id": "374",
+        "portal_page_template_id": "52",
+        "name": "Economics Calendars",
+        "uid": "7dedfc9b2042a1157439",
+        "default_value": "",
+        "additional_options": [
+            "id",
+            "event_calendar",
+            {
+                "name": "color",
+                "type": "select",
+                "options": [
+                    "default",
+                    "green",
+                    "red"
+                ]
+            }
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "5",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": ""
+    },
+    {
+        "portal_page_template_tag_id": "366",
+        "portal_page_template_id": "52",
+        "name": "People Column",
+        "uid": "6c9aa4e7d2e565193e58",
+        "default_value": "",
+        "additional_options": [
+            "metric_id"
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "6",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": ""
+    },
+    {
+        "portal_page_template_tag_id": "373",
+        "portal_page_template_id": "52",
+        "name": "People Calendars",
+        "uid": "917a7fbe4644a6e69637",
+        "default_value": "",
+        "additional_options": [
+            "id",
+            "event_calendar",
+            {
+                "name": "color",
+                "type": "select",
+                "options": [
+                    "default",
+                    "green",
+                    "red"
+                ]
+            }
+        ],
+        "tag_type": "text",
+        "tag_source": "static",
+        "javascript_code": "",
+        "display_order": "7",
+        "use_hmtl_editor_ind": "N",
+        "use_json_editor_ind": "N",
+        "json_list_ind": "Y",
+        "description": ""
+    }
+]
