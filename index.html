@@ -44,7 +44,32 @@
                 </div>
                 <div class="kite-column__card-wrapper" data-list="delivery" data-column="delivery">
                     <div class="kite-column__card kite-column__card--text-left" data-tables="delivery">
-                </div>
+                        <table class="kite-column__card-table kite-column__card-table--striped" data-table-id="116301">
+                                <tr class="kite-column__card-table-header">
+                                    <th class="kite-column__card-table-column kite-column__card-table-column--heading" colspan="3">Table example</th>
+                                </tr>
+                                <tr>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--heading">Region</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--heading">Product 1</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--heading">Product 2</td>
+                                </tr>
+                                <tr>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--heading">Australia</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--value">5</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--value">8</td>
+                                </tr>
+                                <tr>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--heading">USA</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--value">15</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--value">10</td>
+                                </tr>
+                                <tr>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--heading">Europe</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--value">22</td>
+                                    <td class="kite-column__card-table-column kite-column__card-table-column--value">19</td>
+                                </tr>
+                        </table>
+                    </div>
                 </div>
             </li>
             <li class="kite-column">
@@ -90,8 +115,7 @@
         let safetyCardsData = [Safety Column];
         let qualityCardsData = [Quality Column];
         let deliveryEventCalendar = [Delivery Calendar];
-        let deliveryTables = [Delivery Tables];
-        let economicsTables = [Economics Tables];
+
         let economicsEventCalendars = [Economics Calendars];
         let peopleCardsData = [People Column];
         let peopleEventCalendars = [People Calendars];
@@ -281,7 +305,7 @@
 
                         listWrapper.prepend(listItem);
                     }
-            
+
                     listCardWrapper.append(listTitle);
                     listCardWrapper.append(listWrapper);
                     wrapper.prepend(listCardWrapper);
@@ -295,200 +319,6 @@
                 dataType: 'JSON',
                 success: function (data) {
                     buildFunc(data.data);
-                }
-            });
-        };
-
-        const buildTable = (name, columns, id, type, wrapper, date) => {
-            // Elements       
-            let tableElWrapper;
-            let tableHeadingRow;
-            let tableHeader = `<tr class="kite-column__card-table-header">
-                <th class="kite-column__card-table-column kite-column__card-table-column--heading" colspan="3">${name}</th>
-                </tr>`;
-
-            // JS
-            let tableObj = {};
-            let metricData;
-            let regionObj;
-            let columnsNames = columns.split(',');
-            tableObj[id] = {};
-
-            // Remove table & hide wrapper
-            $(`[data-table-id="${id}"]`).remove();
-            wrapper.hide();
-
-            const buildTableEl = () => {
-                for (let item of deliveryDatasetData.data) {
-                    if (item.element_id == id) {
-                        let dimensionFirstValue = item.dimension_value.split(' - ')[0];
-                        let dimensionSecondValue = item.dimension_value.split(' - ')[1];
-
-                        if (!tableObj[id].hasOwnProperty('region')) {
-                            tableObj[id]['region'] = {};
-                        }
-
-                        if (!tableObj[id]['region'][dimensionFirstValue]) {
-                            tableObj[id]['region'][dimensionFirstValue] = {};
-                        }
-
-                        if (!tableObj[id]['region'][dimensionFirstValue].hasOwnProperty(
-                                dimensionSecondValue)) {
-                            if (columns == '') {
-                                tableObj[id]['region'][dimensionFirstValue][
-                                    'column'
-                                ] = item.segment_value_id;
-                            } else {
-                                if (columnsNames.includes(dimensionSecondValue)) {
-                                    tableObj[id]['region'][dimensionFirstValue][
-                                        dimensionSecondValue
-                                    ] = item.segment_value_id;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                let tableObjRegions = tableObj[id]['region'];
-
-                if (type == '3 columns') {
-                    tableElWrapper = $(
-                        `<table class="kite-column__card-table kite-column__card-table--striped" data-table-id="${id}"></table>`
-                    );
-                    tableHeadingRow = $(
-                        '<tr><td class="kite-column__card-table-column kite-column__card-table-column--heading">Region</td></tr>'
-                    );
-
-                    tableElWrapper.append(tableHeader);
-
-                    for (let [i, title] of columnsNames.entries()) {
-                        let columnEl = $(
-                            `<td class="kite-column__card-table-column kite-column__card-table-column--heading">Product ${i + 1}</td>`
-                        )
-                        tableHeadingRow.append(columnEl);
-                    }
-
-                    tableElWrapper.append(tableHeadingRow);
-
-                    for (let item in tableObjRegions) {
-                        let tableRow = $(
-                            `<tr><td class="kite-column__card-table-column">${item}</td></tr>`
-                        );
-
-                        for (let title of columnsNames) {
-                            let segmentId = tableObjRegions[item][title];
-
-                            for (let metric in metricData) {
-                                let segments = metricData[metric][0].data;
-                                let dates = metricData[metric][1].data;
-                                let values = metricData[metric][2].data;
-                                let closestDate = getClosestDateToDate(dates, date);
-
-                                if (dates.length !== 0) {
-                                    for (let [i, value] of dates.entries()) {
-                                        if (value == closestDate && segments[i] ==
-                                            segmentId) {
-                                            tableRow.append(
-                                                `<td class="kite-column__card-table-column kite-column__card-table-column--value">${values[i]}</td>`
-                                            );
-                                        }
-                                    }
-                                } else {
-                                    tableRow.append(
-                                        `<td class="kite-column__card-table-column kite-column__card-table-column--value">-</td>`
-                                    );
-                                }
-                            }
-                        }
-                        tableElWrapper.append(tableRow);
-                    }
-
-                } else if (type == '2 columns') {
-                    tableElWrapper = $(
-                        `<table class="kite-column__card-table kite-column__card-table--small" data-table-id="${id}"></table>`
-                    );
-
-                    tableElWrapper.append(tableHeader);
-
-                    for (let item in tableObjRegions) {
-                        let tableRow = $(
-                            `<tr><td class="kite-column__card-table-column">${item}</td></tr>`
-                        );
-
-                        let segmentId = tableObjRegions[item]['column'];
-
-                        for (let metric in metricData) {
-                            let segments = metricData[metric][0].data;
-                            let dates = metricData[metric][1].data;
-                            let values = metricData[metric][2].data;
-                            let closestDate = getClosestDateToDate(dates, date);
-
-                            if (dates.length !== 0) {
-                                for (let [i, value] of dates.entries()) {
-                                    if (value == closestDate && segments[i] ==
-                                        segmentId) {
-                                        tableRow.append(
-                                            `<td class="kite-column__card-table-column kite-column__card-table-column--value">$${values[i]}</td>`
-                                        );
-                                    }
-                                }
-                            } else {
-                                tableRow.append(
-                                    `<td class="kite-column__card-table-column kite-column__card-table-column--value">-</td>`
-                                );
-                            }
-                        }
-                        tableElWrapper.append(tableRow);
-                    }
-                } else if (type == 'Single column') {
-                    tableElWrapper = $(
-                        `<table class="kite-column__card-table kite-column__card-table--single" data-table-id="${id}"></table>`
-                    );
-
-                    tableElWrapper.append(tableHeader);
-
-                    for (let item in tableObjRegions) {
-                        let tableRow = $(
-                            `<tr></tr>`
-                        );
-
-                        let segmentId = tableObjRegions[item]['column'];
-
-                        for (let metric in metricData) {
-                            let segments = metricData[metric][0].data;
-                            let dates = metricData[metric][1].data;
-                            let values = metricData[metric][2].data;
-                            let closestDate = getClosestDateToDate(dates, date);
-
-                            if (dates.length !== 0) {
-                                for (let [i, value] of dates.entries()) {
-                                    if (value == closestDate && segments[i] ==
-                                        segmentId) {
-                                        tableRow.append(
-                                            `<td class="kite-column__card-table-column">${item}: ${values[i]}</td>`
-                                        );
-                                    }
-                                }
-                            } else {
-                                tableRow.append(
-                                    `<td class="kite-column__card-table-column">${item}: 0</td>`
-                                );
-                            }
-                        }
-                        tableElWrapper.append(tableRow);
-                    }
-                }
-                wrapper.append(tableElWrapper);
-                wrapper.show();
-            }
-
-            $.ajax({
-                type: 'GET',
-                url: `/api/metric_data?element=${id}&all_dimension_value=Y&end_time=${date}`,
-                dataType: 'JSON',
-                success: function (data) {
-                    metricData = data;
-                    buildTableEl();
                 }
             });
         };
@@ -530,16 +360,6 @@
             deliveryEventCalendar.forEach((item) => {
                 buildEventCalendarList(item['id'], item['event_calendar'], item['color'], filterDate,
                     deliveryEventList);
-            });
-
-            deliveryTables.forEach((item) => {
-                buildTable(item['table_name'], item['column_names'], item['metric_id'], item[
-                    'type'], deliveryTablesWrapper, filterDate);
-            });
-
-            economicsTables.forEach((item) => {
-                buildTable(item['table_name'], item['column_names'], item['metric_id'], item[
-                    'type'], economicsTablesWrapper, filterDate);
             });
 
             economicsEventCalendars.forEach((item) => {
