@@ -51,7 +51,6 @@
 
 .kite-header {
     padding: 25px 0 35px;
-    background: linear-gradient(0deg, rgba(255,255,255,1) 50%, rgba(235,243,244,1) 100%);
 }
 
 .kite-header__wrapper {
@@ -77,7 +76,7 @@
     font-size: 30px;
     font-weight: 700;
     line-height: 36px;
-    color: var(--main-color);
+    color: #fff;
 }
 
 .kite-header__filter {
@@ -93,6 +92,7 @@
     font-size: 13px;
     font-weight: 400;
     line-height: 16px;
+    color: #fff;
 }
 
 select.kite-header__filter-input {
@@ -145,6 +145,7 @@ select.kite-header__filter-input {
     text-align: center;
     border-radius: 3px;
     border: 1px solid rgba(34, 34, 34, 0.2);
+    background: #fff;
 }
 
 .kite-column__card:last-child {
