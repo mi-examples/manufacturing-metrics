@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/pt/manufacturing-metrics/style.css">
 <div class="kite-loader js-loader"></div>
-<div class="kite-main p-main-color-bg">
+<div class="kite-main">
     <div class="kite-header">
         <div class="kite-container">
             <div class="kite-header__wrapper">
@@ -179,6 +179,10 @@
         let peopleEventCalendars = [People Calendars];
 
         let todayDate = new Date().toISOString().split('T')[0];
+        
+        const addThemeColors = () => {
+            $('body').addClass('p-main-color-bg');
+        };
 
         const hideColumns = () => {
             safetyColumnWrapper.hide();
@@ -464,6 +468,8 @@
 
         weekFilterSelect.on('change', () => {
             applyFilter();
-        })
+        });
+        
+        addThemeColors();
     });
 </script>
