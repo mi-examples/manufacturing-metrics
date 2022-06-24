@@ -439,8 +439,6 @@
         }
 
         const init = () => {
-            hideLoader();
-
             safetyCardsData.forEach((item) => {
                 fillCard(item['metric_id'], safetyColumnWrapper);
             });
@@ -454,6 +452,7 @@
             });
 
             applyFilter();
+            hideLoader();
         };
 
         showLoader();
