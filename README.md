@@ -19,7 +19,7 @@ Some text
 <img src="" width=70%; height = 70%/>
 
 1. Below the grid, click **[+ New Template]**
-2. **Internal Name**: “links-page”
+2. **Internal Name**: “manufacturing-metrics”
 3. **[Save]**
 
 ### 2. Upload Assets
